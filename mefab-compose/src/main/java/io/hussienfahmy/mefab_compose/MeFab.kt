@@ -30,7 +30,7 @@ import kotlin.math.roundToInt
 @Composable
 public fun MeFab(
     state: State,
-    centerFab: @Composable () -> Unit,
+    centralFab: @Composable () -> Unit,
     fab1: @Composable (() -> Unit)? = null,
     fab2: @Composable (() -> Unit)? = null,
     fab3: @Composable (() -> Unit)? = null,
@@ -93,7 +93,7 @@ public fun MeFab(
                 }
             }
         ) {
-            centerFab()
+            centralFab()
         }
     }
 }

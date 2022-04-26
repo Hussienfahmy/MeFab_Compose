@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
                         floatingActionButton = {
                             MeFab(
                                 state = state,
-                                centerFab = {
+                                centralFab = {
                                     CentralFab(state = state, onClick = {
                                         state = state.inverse()
                                         with(toast) {
