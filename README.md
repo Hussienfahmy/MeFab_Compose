@@ -1,4 +1,5 @@
 # TODO CHECK TO COMPOSE
+
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.hussienfahmy/mefab_compose.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.hussienfahmy%22%20AND%20a:%22mefab_compose%22)
 
 MeFab Compose
@@ -6,9 +7,9 @@ MeFab Compose
 
 Floating Action Button but MOVABLE and EXPANDABLE with Compose :)
 
-For XML version ![click here](https://github.com/Hussienfahmy/MeFab)
+Available Also as XML version ![](https://github.com/Hussienfahmy/MeFab)
 
-![overview](images/overview.gif)
+<img src="images/overview.gif" height="500">
 
 Installation
 --------
@@ -22,49 +23,51 @@ dependencies {
 
 Compatibility & Limits
 -------------
- - Minimum Android SDK API level is 21.
 
- - Maximum actions (Edge fab) is 3.
+- Minimum Android SDK API level is 21.
 
- How to use
+- Maximum actions (Edge fab) is 3.
+
+How to use
 -------------
+
 ```kotlin
-    // this state indicates where the 3 actions will be at the edges (State.EXPANDED)
-    // or hidden at the center (State.CLOSED)
-    // IMPORTANT: you have to control this state manually
-    var meFabState by rememberMeFabState()
-    
-    Scaffold(
-        floatingActionButton = {
-            MeFab(
-                state = meFabState,
-                centralFab = {
-                    CentralFab(state = meFabState, onClick = { 
-                        // obviously you need to inverse the state when the center fab clicked
-                        meFabState = meFabState.inverse()
-                        // more code if you want
-                    }) {
-                        // the content for the center fab
-                        Icon(Icons.Filled.Add, "Central Fab")
-                    }
-                },
-                fab1 = {
-                    EdgeFab(state = meFabState, onClick = { 
-                        // here you can chose to inverse and set the state to CLOSED to make the 
-                        // all edgeFabs go to the center or not 
-                        
-                        meFabState = meFabState.inverse()
-                    }) {
-                        Icon(Icons.Filled.Edit, "Fab 1")
-                    }
-                },
-                fab2 = null, // you can edge fabs up to 3
-                fab3 = null
-            )
-        }
-    ) {
-        // your app content
+// this state indicates where the 3 actions will be at the edges (State.EXPANDED)
+// or hidden at the center (State.CLOSED)
+// IMPORTANT: you have to control this state manually
+var meFabState by rememberMeFabState()
+
+Scaffold(
+    floatingActionButton = {
+        MeFab(
+            state = meFabState,
+            centralFab = {
+                CentralFab(state = meFabState, onClick = {
+                    // obviously you need to inverse the state when the center fab clicked
+                    meFabState = meFabState.inverse()
+                    // more code if you want
+                }) {
+                    // the content for the center fab
+                    Icon(Icons.Filled.Add, "Central Fab")
+                }
+            },
+            fab1 = {
+                EdgeFab(state = meFabState, onClick = {
+                    // here you can chose to inverse and set the state to CLOSED to make the 
+                    // all edgeFabs go to the center or not 
+
+                    meFabState = meFabState.inverse()
+                }) {
+                    Icon(Icons.Filled.Edit, "Fab 1")
+                }
+            },
+            fab2 = null, // you can edge fabs up to 3
+            fab3 = null
+        )
     }
+) {
+    // your app content
+}
 ```
 
 Using By
