@@ -20,8 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import io.hussienfahmy.mefab_compose.CentralFab
+import io.hussienfahmy.mefab_compose.EdgeFab
 import io.hussienfahmy.mefab_compose.MeFab
-import io.hussienfahmy.mefab_compose.data.FabData
+import io.hussienfahmy.mefab_compose.rememberMeFabState
 import io.hussienfahmy.mefab_compose.sample.ui.theme.SampleComposeTheme
 import kotlin.math.roundToInt
 
@@ -40,56 +42,73 @@ class MainActivity : ComponentActivity() {
 
                     val context = LocalContext.current
                     val toast = Toast.makeText(context, "", Toast.LENGTH_SHORT)
+
+                    var state by rememberMeFabState()
+
                     Scaffold(
                         floatingActionButton = {
                             MeFab(
-                                closeAfterEdgeClick = closeAfterEdgeClick,
-                                centerFabData = FabData(
-                                    onClick = {
-                                        toast.run {
+                                state = state,
+                                centerFab = {
+                                    CentralFab(state = state, onClick = {
+                                        state = state.inverse()
+                                        with(toast) {
                                             cancel()
                                             setText("Center Clicked")
                                             show()
                                         }
-                                    },
-                                    content = { Icon(Icons.Filled.Add, "Central Fab") }
-                                ),
-                                fab1Data = if (numberOfEdges >= 1)
-                                    FabData(
-                                        onClick = {
-                                            toast.run {
+                                    }) {
+                                        Icon(Icons.Filled.Add, "Central Fab")
+                                    }
+                                },
+                                fab1 = if (numberOfEdges >= 1) {
+                                    {
+                                        EdgeFab(state = state, onClick = {
+                                            with(toast) {
                                                 cancel()
                                                 setText("Done Clicked")
                                                 show()
                                             }
-                                        },
-                                        content = { Icon(Icons.Filled.Done, "Fab 1") }
-                                    )
-                                else null,
-                                fab2Data = if (numberOfEdges >= 2)
-                                    FabData(
-                                        onClick = {
-                                            toast.run {
+                                            if (closeAfterEdgeClick) {
+                                                state = state.inverse()
+                                            }
+                                        }) {
+                                            Icon(Icons.Filled.Done, "Fab 1")
+                                        }
+                                    }
+                                } else null,
+                                fab2 = if (numberOfEdges >= 2) {
+                                    {
+                                        EdgeFab(state = state, onClick = {
+                                            with(toast) {
                                                 cancel()
                                                 setText("Edit Clicked")
                                                 show()
                                             }
-                                        },
-                                        content = { Icon(Icons.Filled.Edit, "Fab 2") }
-                                    )
-                                else null,
-                                fab3Data = if (numberOfEdges >= 3)
-                                    FabData(
-                                        onClick = {
-                                            toast.run {
+                                            if (closeAfterEdgeClick) {
+                                                state = state.inverse()
+                                            }
+                                        }) {
+                                            Icon(Icons.Filled.Edit, "Fab 2")
+                                        }
+                                    }
+                                } else null,
+                                fab3 = if (numberOfEdges >= 3) {
+                                    {
+                                        EdgeFab(state = state, onClick = {
+                                            with(toast) {
                                                 cancel()
                                                 setText("Delete Clicked")
                                                 show()
                                             }
-                                        },
-                                        content = { Icon(Icons.Filled.Delete, "Fab 3") }
-                                    )
-                                else null
+                                            if (closeAfterEdgeClick) {
+                                                state = state.inverse()
+                                            }
+                                        }) {
+                                            Icon(Icons.Filled.Delete, "Fab 3")
+                                        }
+                                    }
+                                } else null
                             )
                         }
                     ) {
@@ -113,11 +132,10 @@ class MainActivity : ComponentActivity() {
 
                                 Text(text = "Close After Click", modifier = Modifier
                                     .clickable {
-                                    closeAfterEdgeClick = !closeAfterEdgeClick
-                                })
+                                        closeAfterEdgeClick = !closeAfterEdgeClick
+                                    })
                             }
                         }
-
                     }
                 }
             }

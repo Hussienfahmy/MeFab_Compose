@@ -2,54 +2,55 @@ package io.hussienfahmy.mefab_compose
 
 import androidx.compose.animation.core.animateIntOffset
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.consumeAllChanges
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import io.hussienfahmy.mefab_compose.data.FabData
 import io.hussienfahmy.mefab_compose.enums.Position
 import io.hussienfahmy.mefab_compose.enums.State
+import io.hussienfahmy.mefab_compose.utils.Separators
 import io.hussienfahmy.mefab_compose.utils.generateOffSetTo
+import io.hussienfahmy.mefab_compose.utils.generateSeparators
 import io.hussienfahmy.mefab_compose.utils.getFabsSuitablePositions
 import kotlin.math.roundToInt
 
-/**
- * Me fab. Stateful Composable
- *
- * @param centerFabData Data of the center fab
- * @param fab1Data Data of the first fab
- * @param fab2Data Data of the second fab
- * @param fab3Data Data of the third fab
- * @param closeAfterEdgeClick if true the state will be [State.CLOSED] after click on any edge fab
- */
 @Composable
 public fun MeFab(
-    centerFabData: FabData = FabData({}, { Icon(Icons.Filled.Add, "Central Fab") }),
-    fab1Data: FabData? = null,
-    fab2Data: FabData? = null,
-    fab3Data: FabData? = null,
-    closeAfterEdgeClick: Boolean = true
+    state: State,
+    centerFab: @Composable () -> Unit,
+    fab1: @Composable (() -> Unit)? = null,
+    fab2: @Composable (() -> Unit)? = null,
+    fab3: @Composable (() -> Unit)? = null,
 ) {
+    // the value of x and y of borders separates each grid of the screen
+    val separators = LocalContext.current.resources.displayMetrics.generateSeparators()
+
+    // the size of the MeFab
+    val mefabSizeDp = 200.dp
+
     // to control the x and y of the [MeFab] when the center fab dragged
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
-
-    // indicate the state of the [MeFab]
-    var state by remember { mutableStateOf(State.CLOSED) }
 
     // indicate where [MeFab] is located relative to the screen e.g TOP_LEFT, BOTTOM_RIGHT
     var screenRelativePosition by remember { mutableStateOf(Position.default) }
 
     // list of all the edgeFabs passed
-    val edgeFabsData = listOf(fab1Data, fab2Data, fab3Data)
-    val edgeFabsCount = edgeFabsData.count { it != null }
+    val edgeFabs = listOf(fab1, fab2, fab3)
+    val edgeFabsCount = edgeFabs.count { it != null }
 
     // list of positions to indicate where each edgeFab should located
     val edgeFabsPositions = when (state) {
@@ -57,48 +58,80 @@ public fun MeFab(
         State.CLOSED -> List(3) { Position.CENTER }
     }
 
-    val mefabSize = 200.dp
     Box(
         modifier = Modifier
-            .size(mefabSize)
-            .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) },
+            .size(mefabSizeDp)
+            .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+            .onGloballyPositioned {
+                // report the position of the center fab relative to the screen
+                screenRelativePosition =
+                    getMeFabPositionOnScreen(it.size, it.positionInWindow(), separators)
+            },
         contentAlignment = Alignment.Center
     ) {
-        val transition = updateTransition(mefabSize, label = "MeFab Transition")
+        val transition = updateTransition(mefabSizeDp, label = "MeFab Transition")
 
-        edgeFabsData.forEachIndexed { index, fabData ->
-            if (fabData != null) {
+        edgeFabs.forEachIndexed { index, edgeFab ->
+            if (edgeFab != null) {
                 val offset by transition.animateIntOffset(label = "Edge Moving") {
                     generateOffSetTo(edgeFabsPositions[index], it)
                 }
 
-                EdgeFab(
-                    onClick = {
-                        fabData.onClick()
-                        if (closeAfterEdgeClick) state = state.inverse()
-                    },
-                    content = fabData.content,
-                    state = state,
-                    modifier = Modifier.offset { offset }
-                )
+                Box(Modifier.offset { offset }) {
+                    edgeFab()
+                }
             }
         }
 
         // must be at the bottom to make it the most higher elevation
-        CentralFab(
-            state = state,
-            content = centerFabData.content,
-            onClick = {
-                state = state.inverse()
-                centerFabData.onClick()
-            },
-            onDrag = { offset ->
-                offsetX += offset.x
-                offsetY += offset.y
-            },
-            onPositionChange = { position ->
-                screenRelativePosition = position
+        Box(
+            Modifier.pointerInput(Unit) {
+                detectDragGestures { change, dragAmount ->
+                    change.consumeAllChanges()
+                    offsetX += dragAmount.x
+                    offsetY += dragAmount.y
+                }
             }
-        )
+        ) {
+            centerFab()
+        }
+    }
+}
+
+@Composable
+public fun rememberMeFabState(): MutableState<State> = rememberSaveable {
+    mutableStateOf(State.CLOSED)
+}
+
+/**
+ * @param separators the separators of each grid on the screen
+ *
+ * @return the [Position] relative to the screen
+ */
+private fun getMeFabPositionOnScreen(
+    meFabSize: IntSize,
+    meFabCoordinates: Offset,
+    separators: Separators
+): Position {
+    // get the x, y of the center of the fab
+    val x = (meFabCoordinates.x + meFabSize.width / 2).toInt()
+        .coerceIn(0..separators.screenWidth)
+
+    val y = (meFabCoordinates.y + meFabSize.height / 2).toInt()
+        .coerceIn(0..separators.screenHeight)
+
+    return when {
+        y in separators.borderToY1Rang && x in separators.borderToX1Rang -> Position.TOP_LEFT
+        y in separators.borderToY1Rang && x in separators.x1ToX2Range -> Position.TOP_CENTER
+        y in separators.borderToY1Rang && x in separators.x2ToBorderRange -> Position.TOP_RIGHT
+
+        y in separators.y1ToY2Range && x in separators.borderToX1Rang -> Position.CENTER_LEFT
+        y in separators.y1ToY2Range && x in separators.x1ToX2Range -> Position.CENTER
+        y in separators.y1ToY2Range && x in separators.x2ToBorderRange -> Position.CENTER_RIGHT
+
+        y in separators.y2ToBorderRange && x in separators.borderToX1Rang -> Position.BOTTOM_LEFT
+        y in separators.y2ToBorderRange && x in separators.x1ToX2Range -> Position.BOTTOM_CENTER
+        y in separators.y2ToBorderRange && x in separators.x2ToBorderRange -> Position.BOTTOM_RIGHT
+        else -> throw IllegalStateException("Can't determine the position for provided X = $x, Y = $y")
     }
 }

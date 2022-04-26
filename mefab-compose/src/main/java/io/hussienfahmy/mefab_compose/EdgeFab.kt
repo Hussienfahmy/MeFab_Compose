@@ -16,10 +16,10 @@ import io.hussienfahmy.mefab_compose.enums.State
  * @param content content that will be inside the [FloatingActionButton]
  */
 @Composable
-internal fun EdgeFab(
-    onClick: () -> Unit,
-    modifier: Modifier,
+public fun EdgeFab(
     state: State,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     val scale by animateFloatAsState(targetValue = when(state) {
