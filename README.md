@@ -9,7 +9,7 @@ Floating Action Button but MOVABLE and EXPANDABLE with Compose :)
 
 Available Also as XML version ![](https://github.com/Hussienfahmy/MeFab)
 
-![overview](images/overview.gif)
+<img src="images/overview.gif" height="500">
 
 Installation
 --------
@@ -32,7 +32,7 @@ How to use
 -------------
 
 ```kotlin
-    // this state indicates where the 3 actions will be at the edges (State.EXPANDED)
+// this state indicates where the 3 actions will be at the edges (State.EXPANDED)
 // or hidden at the center (State.CLOSED)
 // IMPORTANT: you have to control this state manually
 var meFabState by rememberMeFabState()
