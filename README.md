@@ -1,13 +1,13 @@
-# TODO CHECK TO COMPOSE
-
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.hussienfahmy/mefab_compose.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.hussienfahmy%22%20AND%20a:%22mefab_compose%22)
+
+<img src="https://github.com/Hussienfahmy/MeFab_Compose/blob/master/images/jetpack-compose-icon_RGB.png" width="100" height="100">
 
 MeFab Compose
 =====
 
 Floating Action Button but MOVABLE and EXPANDABLE with Compose :)
 
-Available Also as XML version ![](https://github.com/Hussienfahmy/MeFab)
+Available Also as [XML version](https://github.com/Hussienfahmy/MeFab)
 
 <img src="images/overview.gif" height="500">
 
