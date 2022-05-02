@@ -1,4 +1,4 @@
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.hussienfahmy/mefab_compose.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.hussienfahmy%22%20AND%20a:%22mefab_compose%22)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.hussienfahmy/mefab-compose.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.hussienfahmy%22%20AND%20a:%22mefab-compose%22) 
 
 <img src="https://github.com/Hussienfahmy/MeFab_Compose/blob/master/images/jetpack-compose-icon_RGB.png" width="100" height="100">
 
